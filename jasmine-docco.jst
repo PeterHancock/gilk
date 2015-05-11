@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title><%= title %></title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="jasmine-2.3.2/jasmine.css">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <script type="text/javascript" src="jasmine-2.3.2/jasmine.js"></script>
+  <script type="text/javascript" src="jasmine-2.3.2/jasmine-html.js"></script>
+  <script type="text/javascript" src="jasmine-2.3.2/boot.js"></script>
+  <script type="text/javascript" src="jasmine-docco.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        <% if (hasTitle) { %>
+          <% var section = sections.shift(); %>
+          <%= section.docsHtml %>
+          <% if (!(/^\s*$/).test(section.codeText)) { %>
+            <%= section.codeHtml %>
+          <% } %>
+        <% } else { %>
+          <h1><%= title %></h1>
+        <% } %>
+
+        <% if (sources.length > 1) { %>
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              <% for (var i=0, l = sources.length; i < l; i++) { %>
+                <% var source = sources[i]; %>
+                <li>
+                  <a class="source" href="<%= path.basename(destination(source)) %>">
+                    <%= path.basename(source) %>
+                  </a>
+                </li>
+              <% } %>
+            </ol>
+          </div>
+        <% } %>
+      </div>
+
+      <p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>
+
+      <% for (var i = 0, l = sections.length; i<l; i++) { %>
+        <% var section = sections[i]; %>
+        <%= section.docsHtml %>
+        <% if (!(/^\s*$/).test(section.codeText)) { %>
+          <%= section.codeHtml %>
+        <% } %>
+      <% } %>
+    </div>
+    <hr>
+    <span id="jasmine-results"/>
+  </div>
+</body>
+</html>

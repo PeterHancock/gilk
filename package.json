@@ -1,0 +1,17 @@
+{
+  "name": "jasmine-docco",
+  "version": "0.0.0",
+  "description": "Docco output of Running Jasmine Spec",
+  "bin": "bin/jasmine-docco",
+  "author": "Peter Hancock",
+  "license": "MIT",
+  "dependencies": {
+      "cheerio": "~0.19.0",
+      "docco": "~0.7.0",
+      "jasmine": "~2.3.1",
+      "http-server": "~0.8.0",
+      "shelljs": "~0.4.0",
+      "nodemon": "~1.3.7",
+      "commander": "~2.8.1"
+  }
+}

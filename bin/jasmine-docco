@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+require('shelljs/global');
+
+var fs = require('fs');
+var path = require('path');
+var commander = require('commander');
+var docco = require('docco');
+var cheerio = require('cheerio');
+
+var root = __dirname + '/../';
+
+var spec = process.argv[2];
+var specFile = path.basename(spec);
+var specName = path.basename(spec, '.js')
+
+var docs = 'build/docs/';
+var publicDir = 'build/public/';
+
+mkdir('-p', 'build/docs/');
+
+fs.watch('build/docs/',
+
+ function() {
+
+    // Instrument the the docco output with the Jasmine runner
+    var $ = cheerio.load(fs.readFileSync(docs + specName + '.html'));
+
+    // Transform code for highlight.js
+    //$(".highlight").attr('class', 'hljs');
+    //each(function (i, el) { $(el).parent().html($(el).html()); });
+
+    // Spec to run
+    $('head').append('<script src="' + specFile + '"></script>');
+
+    mkdir(publicDir);
+
+    fs.writeFileSync(publicDir + 'index.html', $.html());
+
+    // Add resources to public dir
+    cp('-R', root + '/public/*', publicDir);
+
+    cp(spec, publicDir + specFile);
+    process.exit(0);
+});
+
+var doccoArgs = ['', ''].concat((spec + ' -t ' + root + '/jasmine-docco.jst -o build/docs --css ?').split(' '));
+
+// TODO - better way to call docco?
+docco.run(doccoArgs);
