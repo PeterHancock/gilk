@@ -7,44 +7,59 @@ var path = require('path');
 var commander = require('commander');
 var docco = require('docco');
 var cheerio = require('cheerio');
+var args = require('minimist')(process.argv.slice(2));
 
 var root = __dirname + '/../';
 
-var spec = process.argv[2];
-var specFile = path.basename(spec);
-var specName = path.basename(spec, '.js')
+var files = args._;
 
-var docs = 'build/docs/';
+var docs = 'build/docco-out/';
+var docsIndex = 'build/docco-out-index/';
 var publicDir = 'build/public/';
 
-mkdir('-p', 'build/docs/');
+mkdir('-p', docs);
 
-fs.watch('build/docs/',
+mkdir('-p', publicDir);
 
- function() {
+function jasminize() {
+    files.forEach(function (file) {
+        var ext = path.extname(file);
+        var specName = path.basename(file, ext);
+        var specFile = path.basename(file);
+        // Instrument the the docco output with the Jasmine runner
+        var $ = cheerio.load(fs.readFileSync(docs + specName + '.html'));
 
-    // Instrument the the docco output with the Jasmine runner
-    var $ = cheerio.load(fs.readFileSync(docs + specName + '.html'));
+        // Transform code for highlight.js
+        //$(".highlight").attr('class', 'hljs');
+        //$('pre').each(function (i, el) { $(el).parent().html($(el).html()); });
 
-    // Transform code for highlight.js
-    //$(".highlight").attr('class', 'hljs');
-    //each(function (i, el) { $(el).parent().html($(el).html()); });
+        // Spec to run
+        $('head').append('<script src="' + specFile + '"></script>');
 
-    // Spec to run
-    $('head').append('<script src="' + specFile + '"></script>');
+        fs.writeFileSync(publicDir + specName + '.html', $.html());
+        cp(file, publicDir + specFile);
+    });
+};
 
-    mkdir(publicDir);
+docco.document({
+    args: files,
+    output: docs,
+    template: root + '/jasmine-docco.jst',
+    css: '?' // Supresses warning
+}, jasminize);
 
-    fs.writeFileSync(publicDir + 'index.html', $.html());
+if (args.i) { 
+    docco.document({
+        args: ['README.md'].concat(files),
+        output: docsIndex,
+        template: root + '/index.jst',
+        css: '?' // Supresses warning
+    }, function () {
+        var $ = cheerio.load(fs.readFileSync(docsIndex + 'README.html'));
+        $('.toc ol li').first().remove();
+        fs.writeFileSync(publicDir +  'index.html', $.html());
+    });
+}
 
-    // Add resources to public dir
-    cp('-R', root + '/public/*', publicDir);
-
-    cp(spec, publicDir + specFile);
-    process.exit(0);
-});
-
-var doccoArgs = ['', ''].concat((spec + ' -t ' + root + '/jasmine-docco.jst -o build/docs --css ?').split(' '));
-
-// TODO - better way to call docco?
-docco.run(doccoArgs);
+// Add resources to public dir
+cp('-R', root + '/public/*', publicDir);

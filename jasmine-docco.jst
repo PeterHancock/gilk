@@ -28,24 +28,26 @@
           <h1><%= title %></h1>
         <% } %>
 
-        <% if (sources.length > 1) { %>
-          <div class="toc">
-            <h3>Table of Contents</h3>
-            <ol>
-              <% for (var i=0, l = sources.length; i < l; i++) { %>
-                <% var source = sources[i]; %>
-                <li>
-                  <a class="source" href="<%= path.basename(destination(source)) %>">
-                    <%= path.basename(source) %>
-                  </a>
-                </li>
-              <% } %>
-            </ol>
-          </div>
-        <% } %>
-      </div>
+        <p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>
 
-      <p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>
+        <% if (sources.length > 1) { %>
+            <div class="toc panel panel-default">
+                <div class="panel-heading">Table of Contents</div>
+                <div class="panel-body">
+                    <ol>
+                        <% for (var i=0, l = sources.length; i < l; i++) { %>
+                            <% var source = sources[i]; %>
+                            <li>
+                                <a class="source" href="<%= path.basename(destination(source)) %>">
+                                    <%= path.basename(source) %>
+                                </a>
+                            </li>
+                            <% } %>
+                        </ol>
+                    </div>
+                </div>
+                <% } %>
+      </div>
 
       <% for (var i = 0, l = sections.length; i<l; i++) { %>
         <% var section = sections[i]; %>
