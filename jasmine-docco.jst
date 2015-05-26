@@ -30,9 +30,8 @@
         <% } else { %>
           <h1><%= title %></h1>
         <% } %>
-        <span id="before-sections"></span>
       </div>
-
+      <div class="sections">
       <% for (var i = 0, l = sections.length; i<l; i++) { %>
         <% var section = sections[i]; %>
         <%= section.docsHtml %>
@@ -40,9 +39,9 @@
           <%= section.codeHtml %>
         <% } %>
       <% } %>
-
+    </div>
       <hr>
       <span id="after-sections"></span>
-    </div>
+  </div>
 </body>
 </html>

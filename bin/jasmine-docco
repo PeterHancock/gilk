@@ -42,24 +42,20 @@ navbar = _.template(fs.readFileSync(root + 'navbar.jst').toString())({
 
 function postProc() {
     files.forEach(function (file) {
-        var ext = path.extname(file);
-        var specName = path.basename(file, ext);
-        var specFile = path.basename(file);
-        // Instrument the the docco output with the Jasmine runner
-        var $ = cheerio.load(fs.readFileSync(doccoOutput + specName + '.html'));
+        var ext = path.extname(file),
+            specName = path.basename(file, ext),
+            specFile = path.basename(file),
+            $ = cheerio.load(fs.readFileSync(doccoOutput + specName + '.html'));
 
-        // Spec to run
         $('head').append('<script src="' + specFile + '"></script>');
 
-        if (title) {
-            $('.navbar-header').append('');
-        }
         $('body').prepend(navbar);
 
-        $('#before-sections').replaceWith('<p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>');
-        $('#after-sections').replaceWith('<span id="jasmine-results" />');
+        $('.header').append('<p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>');
+        $('.sections').after('<br><span id="jasmine-results" />');
 
         fs.writeFileSync(publicDir + specName + '.html', $.html());
+
         cp(file, publicDir + specFile);
     });
 };
