@@ -4,7 +4,7 @@ require('shelljs/global');
 
 var fs = require('fs');
 var path = require('path');
-var commander = require('commander');
+var _ = require('underscore');
 var docco = require('docco');
 var cheerio = require('cheerio');
 var args = require('minimist')(process.argv.slice(2));
@@ -13,24 +13,48 @@ var root = __dirname + '/../';
 
 var files = args._;
 
-var docs = 'build/docco-out/';
-var docsIndex = 'build/docco-out-index/';
+var title = args.title || 'Home';
+
+var doccoOutput = 'build/docco-out/';
 var publicDir = 'build/public/';
 
-mkdir('-p', docs);
+mkdir('-p', doccoOutput);
 
 mkdir('-p', publicDir);
 
-function jasminize() {
+
+function destination(file) {
+    return path.join(doccoOutput, path.basename(file, path.extname(file)) + '.html');
+};
+
+var sources = files.map(function (source) {
+    return {
+        href: path.basename(destination(source)),
+        name: path.basename(source)
+    }
+});
+
+navbar = _.template(fs.readFileSync(root + 'navbar.jst').toString())({
+    title: title,
+    sources: sources
+});
+
+
+function postProc() {
     files.forEach(function (file) {
         var ext = path.extname(file);
         var specName = path.basename(file, ext);
         var specFile = path.basename(file);
         // Instrument the the docco output with the Jasmine runner
-        var $ = cheerio.load(fs.readFileSync(docs + specName + '.html'));
+        var $ = cheerio.load(fs.readFileSync(doccoOutput + specName + '.html'));
 
         // Spec to run
         $('head').append('<script src="' + specFile + '"></script>');
+
+        if (title) {
+            $('.navbar-header').append('');
+        }
+        $('body').prepend(navbar);
 
         $('#before-sections').replaceWith('<p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>');
         $('#after-sections').replaceWith('<span id="jasmine-results" />');
@@ -42,20 +66,20 @@ function jasminize() {
 
 docco.document({
     args: files,
-    output: docs,
+    output: doccoOutput,
     template: root + '/jasmine-docco.jst',
     css: '?' // Supresses warning
-}, jasminize);
+}, postProc);
 
 if (args.i) {
     docco.document({
-        args: ['README.md'].concat(files),
-        output: docsIndex,
+        args: ['README.md'],
+        output: doccoOutput,
         template: root + '/index.jst',
         css: '?' // Supresses warning
     }, function () {
-        var $ = cheerio.load(fs.readFileSync(docsIndex + 'README.html'));
-        $('.toc ol li').first().remove();
+        var $ = cheerio.load(fs.readFileSync(doccoOutput + 'README.html'));
+        $('body').prepend(navbar);
         fs.writeFileSync(publicDir +  'index.html', $.html());
     });
 }

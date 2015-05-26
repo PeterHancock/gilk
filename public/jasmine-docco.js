@@ -16,6 +16,8 @@
                 innerHTML = '(<strong style="color:red"> WITH FAILURES </strong>)';
             }
             document.getElementById('jasmine-results-status').innerHTML = innerHTML;
+
+            $(".jasmine_html-reporter").appendTo("#jasmine-results");
         }
     }
     jasmine.getEnv().addReporter(reporter);
