@@ -29,12 +29,11 @@ function jasminize() {
         // Instrument the the docco output with the Jasmine runner
         var $ = cheerio.load(fs.readFileSync(docs + specName + '.html'));
 
-        // Transform code for highlight.js
-        //$(".highlight").attr('class', 'hljs');
-        //$('pre').each(function (i, el) { $(el).parent().html($(el).html()); });
-
         // Spec to run
         $('head').append('<script src="' + specFile + '"></script>');
+
+        $('#before-sections').replaceWith('<p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>');
+        $('#after-sections').replaceWith('<span id="jasmine-results" />');
 
         fs.writeFileSync(publicDir + specName + '.html', $.html());
         cp(file, publicDir + specFile);
@@ -48,7 +47,7 @@ docco.document({
     css: '?' // Supresses warning
 }, jasminize);
 
-if (args.i) { 
+if (args.i) {
     docco.document({
         args: ['README.md'].concat(files),
         output: docsIndex,

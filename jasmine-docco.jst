@@ -2,19 +2,18 @@
 
 <html>
 <head>
-
   <title><%= title %></title>
-  
+
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-  <link rel="stylesheet" media="all" href="jasmine-2.3.2/jasmine.css">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <link rel="stylesheet" media="all" href="jasmine-2.3.2/jasmine.css">
 
   <script type="text/javascript" src="jasmine-2.3.2/jasmine.js"></script>
   <script type="text/javascript" src="jasmine-2.3.2/jasmine-html.js"></script>
   <script type="text/javascript" src="jasmine-2.3.2/boot.js"></script>
   <script type="text/javascript" src="jasmine-docco.js"></script>
-
 </head>
 <body>
   <div class="container">
@@ -31,7 +30,7 @@
           <h1><%= title %></h1>
         <% } %>
 
-        <p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>
+        <span id="before-sections"></span>
 
         <% if (sources.length > 1) { %>
             <div class="toc panel panel-default">
@@ -61,7 +60,7 @@
       <% } %>
     </div>
     <hr>
-    <span id="jasmine-results"/>
+    <span id="after-sections"></span>
   </div>
 </body>
 </html>
