@@ -11,6 +11,8 @@ var args = require('minimist')(process.argv.slice(2));
 
 var root = __dirname + '/../';
 
+var templates = root + 'templates/'
+
 var files = args._;
 
 var title = args.title || 'Home';
@@ -32,7 +34,7 @@ var sources = files.map(function (source) {
     }
 });
 
-navbar = _.template(fs.readFileSync(root + 'navbar.jst').toString())({
+navbar = _.template(fs.readFileSync(templates + 'navbar.jst').toString())({
     title: title,
     sources: sources
 });
@@ -62,7 +64,7 @@ function postProc() {
 docco.document({
     args: files,
     output: doccoOutput,
-    template: root + '/page.jst',
+    template: templates + 'page.jst',
     css: '?' // Supresses warning
 }, postProc);
 
@@ -70,14 +72,14 @@ if (args.index) {
     var index = args.index,
         ext = path.extname(index),
         name  = path.basename(index, ext),
-        toc = _.template(fs.readFileSync(root + 'toc.jst').toString())({
+        toc = _.template(fs.readFileSync(templates + 'toc.jst').toString())({
             title: 'Table of Contents',
             sources: sources
         });
     docco.document({
         args: [index],
         output: doccoOutput,
-        template: root + '/page.jst',
+        template: templates + 'page.jst',
         css: '?' // Supresses warning
     }, function () {
         var $ = cheerio.load(fs.readFileSync(doccoOutput + name + '.html'));
