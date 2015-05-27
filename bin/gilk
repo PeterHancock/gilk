@@ -17,6 +17,9 @@ var files = args._;
 
 var title = args.title || 'Home';
 
+var js = args.js;
+var css = args.css;
+
 var doccoOutput = 'build/docco-out/';
 var publicDir = 'build/public/';
 
@@ -45,18 +48,21 @@ function postProc() {
             specName = path.basename(file, ext),
             specFile = path.basename(file),
             $ = cheerio.load(fs.readFileSync(doccoOutput + specName + '.html'));
-        $('head').append('<link rel="stylesheet" media="all" href="jasmine-2.3.2/jasmine.css">');
+
+        if (args.css) {
+            $('head').append('<link rel="stylesheet" media="all" href="custom.css">');
+        }
+
         $('body').prepend(navbar);
-        [
-            'jasmine-2.3.2/jasmine.js',
-            'jasmine-2.3.2/jasmine-html.js',
-            'jasmine-2.3.2/boot.js',
-            'jasmine-docco.js',
-            specFile
-        ].forEach( function (src) {
-            $('body').append('<script type="text/javascript" src="' + src + '"></script>');
-        });
+
+        if (args.js) {
+            $('body').append('<script type="text/javascript" src="custom.js"></script>');
+        }
+
+        $('body').append('<script type="text/javascript" src="' + specFile + '"></script>');
+
         fs.writeFileSync(publicDir + specName + '.html', $.html());
+        //TODO do this async
         cp(file, publicDir + specFile);
     });
 };
@@ -93,3 +99,12 @@ if (args.index) {
 
 // Add resources to public dir
 cp('-R', root + '/public/*', publicDir);
+
+
+if (args.js) {
+    cp(args.js, publicDir + 'custom.js');
+}
+
+if (args.css) {
+    cp(args.css, publicDir + 'custom.css');
+}
