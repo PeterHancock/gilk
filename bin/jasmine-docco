@@ -19,9 +19,7 @@ var doccoOutput = 'build/docco-out/';
 var publicDir = 'build/public/';
 
 mkdir('-p', doccoOutput);
-
 mkdir('-p', publicDir);
-
 
 function destination(file) {
     return path.join(doccoOutput, path.basename(file, path.extname(file)) + '.html');
@@ -39,23 +37,24 @@ navbar = _.template(fs.readFileSync(root + 'navbar.jst').toString())({
     sources: sources
 });
 
-
 function postProc() {
     files.forEach(function (file) {
         var ext = path.extname(file),
             specName = path.basename(file, ext),
             specFile = path.basename(file),
             $ = cheerio.load(fs.readFileSync(doccoOutput + specName + '.html'));
-
-        $('head').append('<script src="' + specFile + '"></script>');
-
+        $('head').append('<link rel="stylesheet" media="all" href="jasmine-2.3.2/jasmine.css">');
         $('body').prepend(navbar);
-
-        $('.header').append('<p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>');
-        $('.sections').after('<br><span id="jasmine-results" />');
-
+        [
+            'jasmine-2.3.2/jasmine.js',
+            'jasmine-2.3.2/jasmine-html.js',
+            'jasmine-2.3.2/boot.js',
+            'jasmine-docco.js',
+            specFile
+        ].forEach( function (src) {
+            $('body').append('<script type="text/javascript" src="' + src + '"></script>');
+        });
         fs.writeFileSync(publicDir + specName + '.html', $.html());
-
         cp(file, publicDir + specFile);
     });
 };
@@ -63,19 +62,29 @@ function postProc() {
 docco.document({
     args: files,
     output: doccoOutput,
-    template: root + '/jasmine-docco.jst',
+    template: root + '/page.jst',
     css: '?' // Supresses warning
 }, postProc);
 
-if (args.i) {
+if (args.index) {
+    var index = args.index,
+        ext = path.extname(index),
+        name  = path.basename(index, ext),
+        toc = _.template(fs.readFileSync(root + 'toc.jst').toString())({
+            title: 'Table of Contents',
+            sources: sources
+        });
     docco.document({
-        args: ['README.md'],
+        args: [index],
         output: doccoOutput,
-        template: root + '/index.jst',
+        template: root + '/page.jst',
         css: '?' // Supresses warning
     }, function () {
-        var $ = cheerio.load(fs.readFileSync(doccoOutput + 'README.html'));
+        var $ = cheerio.load(fs.readFileSync(doccoOutput + name + '.html'));
         $('body').prepend(navbar);
+        if (sources.length > 1) {
+            $('.header').append(toc);
+        }
         fs.writeFileSync(publicDir +  'index.html', $.html());
     });
 }

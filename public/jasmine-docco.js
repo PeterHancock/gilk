@@ -1,4 +1,6 @@
-(function(jasmine) {
+(function($, jasmine) {
+    $('.header').append('<p><a href="#jasmine-results"><strong>Jasmine Report</strong></a> <span id="jasmine-results-status"></span></p>');
+    $('.sections').after('<br><span id="jasmine-results" />');
     var passed = true;
     var reporter = {
 
@@ -21,4 +23,4 @@
         }
     }
     jasmine.getEnv().addReporter(reporter);
-}(jasmine));
+}($, jasmine));
