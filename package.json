@@ -1,8 +1,8 @@
 {
-  "name": "jasmine-docco",
+  "name": "gilk",
   "version": "0.0.0",
-  "description": "Docco output of Running Jasmine Spec",
-  "bin": "bin/jasmine-docco",
+  "description": "Bootstrap + Docco",
+  "bin": "bin/gilk",
   "author": "Peter Hancock",
   "license": "MIT",
   "dependencies": {
