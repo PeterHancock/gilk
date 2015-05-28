@@ -2,11 +2,12 @@
 
 require('shelljs/global');
 
-var fs = require('fs');
-var path = require('path');
-var _ = require('underscore');
-var docco = require('docco');
-var cheerio = require('cheerio');
+var Promise = require('es6-promise').Promise,
+    fs = require('fs'),
+    path = require('path'),
+    _ = require('underscore'),
+    docco = require('docco'),
+    cheerio = require('cheerio');
 
 var root = __dirname;
 var templates = root + '/templates/';
@@ -25,6 +26,7 @@ var publicDest = 'build/public/';
 }
 */
 module.exports = function gilk(config) {
+
     var files = config.files; //TODO validate
     var title = config.title || 'Home';
     var js = config.js;
@@ -47,7 +49,7 @@ module.exports = function gilk(config) {
         sources: sources
     });
 
-    function postProc() {
+    function postProc(resolve, reject) {
         files.forEach(function (file) {
             var ext = path.extname(file),
             specName = path.basename(file, ext),
@@ -70,6 +72,7 @@ module.exports = function gilk(config) {
             //TODO do this async
             cp(file, publicDest + specFile);
         });
+        resolve();
     };
 
 
@@ -77,45 +80,59 @@ module.exports = function gilk(config) {
 
     mkdir('-p', publicDest);
 
-    docco.document({
-        args: files,
-        output: doccoOutput,
-        template: templates + 'page.jst',
-        css: '?' // Supresses warning
-    }, postProc);
-
-    if (indexFile) {
-        ext = path.extname(indexFile),
-        name  = path.basename(indexFile, ext),
-        toc = _.template(fs.readFileSync(templates + 'toc.jst').toString())({
-            title: 'Table of Contents',
-            sources: sources
-        });
+    var documentSpecs = new Promise( function (resolve, reject) {
         docco.document({
-            args: [indexFile],
+            args: files,
             output: doccoOutput,
             template: templates + 'page.jst',
             css: '?' // Supresses warning
         }, function () {
-            var $ = cheerio.load(fs.readFileSync(doccoOutput + name + '.html'));
-            $('body').prepend(navbar);
-            if (sources.length > 1) {
-                $('.header').append(toc);
-            }
-            fs.writeFileSync(publicDest +  'index.html', $.html());
+            postProc(resolve, reject);
         });
+
+    });
+
+    var copyResources = new Promise(function (resolve, reject) {
+        // Add resources to public dir
+        cp('-R', publicSrc + '*', publicDest);
+
+        if (js) {
+            cp(js, publicDest + 'custom.js');
+        }
+
+        if (css) {
+            cp(css, publicDest + 'custom.css');
+        }
+        resolve();
+    });
+
+    var promises = [documentSpecs, copyResources];
+
+    if (indexFile) {
+        var createIndex = new Promise(function (resolve, reject) {
+            var ext = path.extname(indexFile),
+            name  = path.basename(indexFile, ext),
+            toc = _.template(fs.readFileSync(templates + 'toc.jst').toString())({
+                title: 'Table of Contents',
+                sources: sources
+            });
+            docco.document({
+                args: [indexFile],
+                output: doccoOutput,
+                template: templates + 'page.jst',
+                css: '?' // Supresses warning
+            }, function () {
+                var $ = cheerio.load(fs.readFileSync(doccoOutput + name + '.html'));
+                $('body').prepend(navbar);
+                if (sources.length > 1) {
+                    $('.header').append(toc);
+                }
+                fs.writeFileSync(publicDest +  'index.html', $.html());
+                resolve();
+            });
+        });
+        promises.push(createIndex);
     }
 
-    // Add resources to public dir
-    cp('-R', publicSrc + '*', publicDest);
-
-
-    if (js) {
-        cp(js, publicDest + 'custom.js');
-    }
-
-    if (css) {
-        cp(css, publicDest + 'custom.css');
-    }
-
+    return Promise.all(promises);
 }

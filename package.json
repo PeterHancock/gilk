@@ -11,6 +11,7 @@
     "docco": "0.7.0",
     "minimist": "1.1.1",
     "shelljs": "0.4.0",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "es6-promise": "~2.1.1"
   }
 }
