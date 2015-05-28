@@ -2,14 +2,15 @@
   "name": "gilk",
   "version": "0.0.0",
   "description": "Bootstrap + Docco",
+  "main": "index.js",
   "bin": "bin/gilk",
   "author": "Peter Hancock",
   "license": "MIT",
   "dependencies": {
-    "cheerio": "~0.19.0",
-    "docco": "~0.7.0",
-    "minimist": "^1.1.1",
-    "shelljs": "~0.4.0",
-    "underscore": "~1.8.3"
+    "cheerio": "0.19.0",
+    "docco": "0.7.0",
+    "minimist": "1.1.1",
+    "shelljs": "0.4.0",
+    "underscore": "1.8.3"
   }
 }

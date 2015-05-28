@@ -1,110 +1,18 @@
 #!/usr/bin/env node
 
-require('shelljs/global');
+var gilk = require('../index');
 
-var fs = require('fs');
-var path = require('path');
-var _ = require('underscore');
-var docco = require('docco');
-var cheerio = require('cheerio');
 var args = require('minimist')(process.argv.slice(2));
-
-var root = __dirname + '/../';
-
-var templates = root + 'templates/'
-
 var files = args._;
-
 var title = args.title || 'Home';
-
 var js = args.js;
 var css = args.css;
+var indexSrc = args.index;
 
-var doccoOutput = 'build/docco-out/';
-var publicDir = 'build/public/';
-
-mkdir('-p', doccoOutput);
-mkdir('-p', publicDir);
-
-function destination(file) {
-    return path.join(doccoOutput, path.basename(file, path.extname(file)) + '.html');
-};
-
-var sources = files.map(function (source) {
-    return {
-        href: path.basename(destination(source)),
-        name: path.basename(source)
-    }
+gilk({
+    files: args._,
+    title: args.title,
+    js: args.js,
+    css: args.css,
+    indexFile: args.index
 });
-
-navbar = _.template(fs.readFileSync(templates + 'navbar.jst').toString())({
-    title: title,
-    sources: sources
-});
-
-function postProc() {
-    files.forEach(function (file) {
-        var ext = path.extname(file),
-            specName = path.basename(file, ext),
-            specFile = path.basename(file),
-            $ = cheerio.load(fs.readFileSync(doccoOutput + specName + '.html'));
-
-        if (args.css) {
-            $('head').append('<link rel="stylesheet" media="all" href="custom.css">');
-        }
-
-        $('body').prepend(navbar);
-
-        if (args.js) {
-            $('body').append('<script type="text/javascript" src="custom.js"></script>');
-        }
-
-        $('body').append('<script type="text/javascript" src="' + specFile + '"></script>');
-
-        fs.writeFileSync(publicDir + specName + '.html', $.html());
-        //TODO do this async
-        cp(file, publicDir + specFile);
-    });
-};
-
-docco.document({
-    args: files,
-    output: doccoOutput,
-    template: templates + 'page.jst',
-    css: '?' // Supresses warning
-}, postProc);
-
-if (args.index) {
-    var index = args.index,
-        ext = path.extname(index),
-        name  = path.basename(index, ext),
-        toc = _.template(fs.readFileSync(templates + 'toc.jst').toString())({
-            title: 'Table of Contents',
-            sources: sources
-        });
-    docco.document({
-        args: [index],
-        output: doccoOutput,
-        template: templates + 'page.jst',
-        css: '?' // Supresses warning
-    }, function () {
-        var $ = cheerio.load(fs.readFileSync(doccoOutput + name + '.html'));
-        $('body').prepend(navbar);
-        if (sources.length > 1) {
-            $('.header').append(toc);
-        }
-        fs.writeFileSync(publicDir +  'index.html', $.html());
-    });
-}
-
-// Add resources to public dir
-cp('-R', root + '/public/*', publicDir);
-
-
-if (args.js) {
-    cp(args.js, publicDir + 'custom.js');
-}
-
-if (args.css) {
-    cp(args.css, publicDir + 'custom.css');
-}
