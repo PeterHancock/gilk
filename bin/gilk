@@ -1,24 +1,27 @@
 #!/usr/bin/env node
 
-var gilk = require('../index');
+var gilk = require('../index'),
+    vinylFs = require('vinyl-fs');
 
 var args = require('minimist')(process.argv.slice(2)),
     files = args._,
     title = args.title || 'Home',
     js = args.js,
     css = args.css,
-    indexSrc = args.index;
+    index = args.index,
+    dest = args.dest || '.';
 
 console.log('gilk: started ...');
 
-gilk({
-    files: args._,
-    title: args.title,
-    js: args.js,
-    css: args.css,
-    indexFile: args.index
-}).then(function () {
-    console.log('gilk: complete.');
-}, function (err) {
-    console.error('Gilk error: ', err);
-});
+vinylFs.src(files)
+    .pipe(gilk({
+            title: title,
+            js: js,
+            css: css,
+            index: index,
+            dest: dest
+        }))
+    .on('end', function () {
+        console.log('gilk: completed');
+    })
+    .pipe(vinylFs.dest(dest));
