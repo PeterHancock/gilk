@@ -148,7 +148,7 @@ function renderIndex(sources, config) {
             });
         var $ = cheerio.load(doc);
         $('body').prepend(navbar);
-        $('.header').append(toc);
+        $('#header').append(toc);
         resolve($.html());
     });
 }

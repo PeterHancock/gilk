@@ -5,21 +5,21 @@ var gilk = require('../index'),
 
 var args = require('minimist')(process.argv.slice(2)),
     files = args._,
+    base = args.base || '.'
     title = args.title || 'Home',
     js = args.js,
     css = args.css,
-    index = args.index,
+    index = args.index, // Marksdown rendered to index.html
     dest = args.dest || '.';
 
 console.log('gilk: started ...');
 
-vinylFs.src(files)
+vinylFs.src(files, {base: base})
     .pipe(gilk({
             title: title,
             js: js,
             css: css,
-            index: index,
-            dest: dest
+            index: index
         }))
     .on('end', function () {
         console.log('gilk: completed');
