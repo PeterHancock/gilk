@@ -7,16 +7,15 @@
   "author": "Peter Hancock",
   "license": "MIT",
   "dependencies": {
-    "cheerio": "0.19.0",
-    "minimist": "1.1.1",
-    "underscore": "1.8.3",
+    "dox": "~0.8.0",
     "es6-promise": "2.1.1",
     "fs-extra": "0.18.4",
+    "marked": "~0.3.3",
+    "minimist": "1.1.1",
     "mustache": "~2.0.0",
-    "dox": "~0.8.0",
     "through": "~2.3.7",
-    "vinyl-fs": "~1.0.0",
+    "underscore": "1.8.3",
     "vinyl": "~0.4.6",
-    "marked": "~0.3.3"
+    "vinyl-fs": "~1.0.0"
   }
 }
