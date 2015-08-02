@@ -116,6 +116,7 @@ function renderIndex(pageTmpl, sources, config) {
                 full: markdown(fs.readFileSync(config.index).toString())
             }}];
         var doc = Mustache.render(pageTmpl, {
+                isIndex: true,
                 title: config.title,
                 comments: comments,
                 toc: {
