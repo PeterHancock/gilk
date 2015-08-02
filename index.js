@@ -13,8 +13,6 @@ var root = __dirname;
 var templates = root + '/templates/';
 var publicSrc = root + '/public/';
 
-var pageTmpl = fs.readFileSync(templates + 'page.tmpl').toString();
-
 var markdown = require('marked');
 
 var renderer = new markdown.Renderer();
@@ -42,6 +40,11 @@ markdown.setOptions(markedOptions);
 */
 module.exports = function gilk(config) {
 
+    var pageTmplFile = config.pageTmpl || templates + 'page.tmpl';
+
+    var pageTmpl = fs.readFileSync(pageTmplFile).toString();
+
+
     config.title = config.title || 'Home';
 
     var sources = [];
@@ -53,7 +56,7 @@ module.exports = function gilk(config) {
     });
 
     var stream = through(function (file) {
-        var docFile = renderDocFile(file, config, config.title);
+        var docFile = renderDocFile(pageTmpl, file, config, config.title);
         var sourcePath = path.relative(file.base, docFile.path);
         sources.push({
             href: sourcePath,
@@ -69,7 +72,7 @@ module.exports = function gilk(config) {
         var waitFor = [staticResources];
         if (config.index) {
             waitFor.push(
-                renderIndex(sources, config).then(function (contents) {
+                renderIndex(pageTmpl, sources, config).then(function (contents) {
                     stream.queue(new File({
                         path: 'index.html',
                         contents: new Buffer(contents)
@@ -87,7 +90,7 @@ module.exports = function gilk(config) {
     return stream;
 };
 
-function renderDocFile(file, config, title) {
+function renderDocFile(pageTmpl, file, config, title) {
     var ext = path.extname(file.path),
     specName = path.basename(file.path, ext),
     specFile = path.basename(file.path);
@@ -104,7 +107,7 @@ function renderDocFile(file, config, title) {
     return docFile;
 }
 
-function renderIndex(sources, config) {
+function renderIndex(pageTmpl, sources, config) {
     return new Promise(function (resolve, reject) {
         var ext = path.extname(config.index),
             name  = path.basename(config.index, ext);
