@@ -10,7 +10,8 @@ var args = require('minimist')(process.argv.slice(2)),
     js = args.js,
     css = args.css,
     index = args.index, // Marksdown rendered to index.html
-    dest = args.dest || '.';
+    dest = args.dest || '.',
+    pageTmpl = args.pageTmpl;
 
 console.log('gilk: started ...');
 
@@ -19,7 +20,8 @@ vinylFs.src(files, {base: base})
             title: title,
             js: js,
             css: css,
-            index: index
+            index: index,
+            pageTmpl: pageTmpl
         }))
     .on('end', function () {
         console.log('gilk: completed');

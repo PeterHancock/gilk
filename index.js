@@ -3,7 +3,6 @@ var Promise = require('es6-promise').Promise,
     path = require('path'),
     _ = require('underscore'),
     dox = require('dox'),
-    cheerio = require('cheerio'),
     File = require('vinyl'),
     vinylFs = require('vinyl-fs'),
     Mustache = require('mustache'),
@@ -14,25 +13,9 @@ var root = __dirname;
 var templates = root + '/templates/';
 var publicSrc = root + '/public/';
 
-var pageTmpl = fs.readFileSync(templates + 'page.tmpl').toString();
-var navbarTmpl = fs.readFileSync(templates + 'navbar.tmpl').toString();
-var navbarJSTmpl = fs.readFileSync(templates + 'navbarJS.tmpl').toString();
-
 var markdown = require('marked');
 
 var renderer = new markdown.Renderer();
-
-renderer.heading = function (text, level) {
-    return '<h' + level + '>' + text + '</h' + level + '>\n';
-};
-
-renderer.paragraph = function (text) {
-    return '<p>' + text + '</p>';
-};
-
-renderer.br = function () {
-    return '<br />';
-};
 
 var markedOptions = {
     renderer: renderer
@@ -47,7 +30,6 @@ var markedOptions = {
 
 markdown.setOptions(markedOptions);
 
-
 /*
 {
     title: '',
@@ -58,22 +40,23 @@ markdown.setOptions(markedOptions);
 */
 module.exports = function gilk(config) {
 
+    var pageTmplFile = config.pageTmpl || templates + 'page.tmpl';
+
+    var pageTmpl = fs.readFileSync(pageTmplFile).toString();
+
+
     config.title = config.title || 'Home';
 
     var sources = [];
 
-    var navbar = Mustache.render(navbarTmpl, {
-        title: config.title
-    });
-
-    var p = new Promise(function (resolve) {
+    var staticResources = new Promise(function (resolve) {
         vinylFs.src(publicSrc + '**/*').pipe(through(function (resource) {
             stream.queue(resource);
         }, resolve));
     });
 
     var stream = through(function (file) {
-        var docFile = renderDocFile(file, config, navbar);
+        var docFile = renderDocFile(pageTmpl, file, config, config.title);
         var sourcePath = path.relative(file.base, docFile.path);
         sources.push({
             href: sourcePath,
@@ -83,13 +66,13 @@ module.exports = function gilk(config) {
         this.queue(docFile);
     }, function () {
         stream.queue(new File({
-            path: 'navbar.js',
-            contents: new Buffer(renderNavbarJS(sources))
+            path: 'toc.json',
+            contents: new Buffer(JSON.stringify(sources))
         }));
-        var waitFor = [p];
+        var waitFor = [staticResources];
         if (config.index) {
             waitFor.push(
-                renderIndex(sources, config).then(function (contents) {
+                renderIndex(pageTmpl, sources, config).then(function (contents) {
                     stream.queue(new File({
                         path: 'index.html',
                         contents: new Buffer(contents)
@@ -107,54 +90,38 @@ module.exports = function gilk(config) {
     return stream;
 };
 
-function renderDocFile(file, config, navbar) {
+function renderDocFile(pageTmpl, file, config, title) {
     var ext = path.extname(file.path),
     specName = path.basename(file.path, ext),
     specFile = path.basename(file.path);
     var comments = dox.parseComments(file.contents.toString());
     var doc = Mustache.render(pageTmpl,
         _.extend({
-            navbar: true,
+            title: title,
             specFile: specFile,
             comments: comments
         }, config))
     var docFile = file.clone();
-    var $ = cheerio.load(doc);
-    $('body').prepend(navbar);
-    docFile.contents = new Buffer($.html());
+    docFile.contents = new Buffer(doc);
     docFile.path = file.path.replace(/\.js$/, '.html');
     return docFile;
 }
 
-function renderIndex(sources, config) {
+function renderIndex(pageTmpl, sources, config) {
     return new Promise(function (resolve, reject) {
         var ext = path.extname(config.index),
-            name  = path.basename(config.index, ext),
-            toc = Mustache.render(fs.readFileSync(templates + 'toc.tmpl').toString(), {
-                title: 'Table of Contents',
-                sources: sources
-            }),
-            navbar = Mustache.render(navbarTmpl, {
-                title: config.title,
-                sources: sources
-            });
+            name  = path.basename(config.index, ext);
         var comments = [{
             description: {
                 full: markdown(fs.readFileSync(config.index).toString())
             }}];
         var doc = Mustache.render(pageTmpl, {
                 title: config.title,
-                comments: comments
+                comments: comments,
+                toc: {
+                    sources: sources
+                }
             });
-        var $ = cheerio.load(doc);
-        $('body').prepend(navbar);
-        $('#header').append(toc);
-        resolve($.html());
-    });
-}
-
-function renderNavbarJS(sources) {
-    return Mustache.render(navbarJSTmpl, {
-        sources: sources
+        resolve(doc);
     });
 }

@@ -11,7 +11,39 @@
 </head>
 <body>
     <div class="container">
-      <div id="header"></div>
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/">
+                    <span class="navbar-brand">{{title}}</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container">
+      <div id="header">
+          {{#toc}}
+          <div class="toc panel panel-default">
+              <div class="panel-heading">Table of Contents</div>
+              <div class="panel-body">
+                  <ol>
+                  {{#sources}}
+                  <li>
+                      <a class="source" href="{{href}}">{{name}}</a>
+                  </li>
+                  {{/sources}}
+                  </ol>
+              </div>
+          </div>
+          {{/toc}}
+      </div>
       <div class="sections">
           {{#comments}}
           {{{description.full}}}
@@ -28,8 +60,5 @@
   <script type="text/javascript" src="/{{.}}"></script>
   {{/js}}
   <script type="text/javascript" src="/{{specFile}}"></script>
-  {{#navbar}}
-  <script type="text/javascript" src="/navbar.js"></script>
-  {{/navbar}}
 </body>
 </html>
