@@ -49,11 +49,15 @@ module.exports = function gilk(config) {
 
     var sources = [];
 
-    var staticResources = new Promise(function (resolve) {
-        vinylFs.src(publicSrc + '**/*').pipe(through(function (resource) {
-            stream.queue(resource);
-        }, resolve));
-    });
+    var tasks = [];
+
+    if (!config.pageTmpl) {
+        tasks.push(new Promise(function (resolve) {
+            vinylFs.src(publicSrc + '**/*').pipe(through(function (resource) {
+                stream.queue(resource);
+            }, resolve));
+        }));
+    }
 
     var stream = through(function (file) {
         var docFile = renderDocFile(pageTmpl, file, config, config.title);
@@ -69,9 +73,8 @@ module.exports = function gilk(config) {
             path: 'toc.json',
             contents: new Buffer(JSON.stringify(sources))
         }));
-        var waitFor = [staticResources];
         if (config.index) {
-            waitFor.push(
+            tasks.push(
                 renderIndex(pageTmpl, sources, config).then(function (contents) {
                     stream.queue(new File({
                         path: 'index.html',
@@ -80,7 +83,7 @@ module.exports = function gilk(config) {
                 })
             );
         }
-        Promise.all(waitFor).then(function () {
+        Promise.all(tasks).then(function () {
             stream.queue(null);
         }, function (err) {
             console.error(err);
@@ -92,12 +95,13 @@ module.exports = function gilk(config) {
 
 function renderDocFile(pageTmpl, file, config, title) {
     var ext = path.extname(file.path),
-    specName = path.basename(file.path, ext),
-    specFile = path.basename(file.path);
+        specName = path.basename(file.path, ext),
+        specFile = path.basename(file.path);
     var comments = dox.parseComments(file.contents.toString());
     var doc = Mustache.render(pageTmpl,
         _.extend({
             title: title,
+            specName: specName,
             specFile: specFile,
             comments: comments
         }, config))

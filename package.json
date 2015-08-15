@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "Bootstrap + Docco",
   "main": "index.js",
-  "bin": "bin/gilk",
+  "bin": {
+    "gilk": "bin/cmd.js"
+  },
   "author": "Peter Hancock",
   "license": "MIT",
   "dependencies": {
@@ -13,9 +15,13 @@
     "marked": "~0.3.3",
     "minimist": "1.1.1",
     "mustache": "~2.0.0",
+    "object-assign": "^3.0.0",
     "through": "~2.3.7",
     "underscore": "1.8.3",
     "vinyl": "~0.4.6",
     "vinyl-fs": "~1.0.0"
+  },
+  "scripts": {
+    "docs": "rm -rf build && mkdir -p build/public &&  ./bin/cmd.js bin/cmd.js --base bin --index README.md --dest build/public"
   }
 }
