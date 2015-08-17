@@ -4,11 +4,11 @@
 <head>
   <title>{{title}}</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{{baseurl}}}/bootstrap/css/bootstrap.min.css">
   <!-- Code highlighting -->
-  <link rel="stylesheet" href="/prism/prism-hopscotch.css">
+  <link rel="stylesheet" href="{{{baseurl}}}/prism/prism-hopscotch.css">
   {{#css}}
-  <link rel="stylesheet" href="/{{.}}">
+  <link rel="stylesheet" href="{{{baseurl}}}/{{.}}">
   {{/css}}
 </head>
 <body>
@@ -16,7 +16,7 @@
         <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a href="/">
+                    <a href="{{{baseurl}}}/">
                     <span class="navbar-brand">{{title}}</span>
                     </a>
                 </div>
@@ -32,7 +32,7 @@
                   <ol>
                   {{#sources}}
                   <li>
-                      <a class="source" href="{{href}}">{{name}}</a>
+                      <a class="source" href="{{{baseurl}}}/{{href}}">{{name}}</a>
                   </li>
                   {{/sources}}
                   </ol>
@@ -50,14 +50,14 @@
       </div>
       <hr>
   </div>
-  <script type="text/javascript" src="/jquery/jquery.min.js"></script>
-  <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/prism/prism.js"></script>
+  <script type="text/javascript" src="{{{baseurl}}}/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="{{{baseurl}}}/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{{baseurl}}}/prism/prism.js"></script>
   {{#js}}
-  <script type="text/javascript" src="/{{.}}"></script>
+  <script type="text/javascript" src="{{{baseurl}}}{{.}}"></script>
   {{/js}}
   {{^exclude-source}}
-  <script type="text/javascript" src="/{{{srcfile}}}"></script>
+  <script type="text/javascript" src="{{{baseurl}}}/{{{srcfile}}}"></script>
   {{/exclude-source}}
 </body>
 </html>

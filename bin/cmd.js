@@ -16,7 +16,7 @@ var config = require('minimist')(process.argv.slice(2)),
 console.error('gilk: started ...');
 /*
 ##API
-see [index.js](/lib/index)
+see [index.js](/gilk/lib/index)
 */
 vfs.src(files, { base: config.base || '.' })
 /*
