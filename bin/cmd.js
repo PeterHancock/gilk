@@ -1,39 +1,32 @@
 #!/usr/bin/env node
 
-var gilk = require('../index'),
-    assign = require('object-assign')
-    vinylFs = require('vinyl-fs');
-
 /*
-##CLI
+#gilk CLI
+
+`./bin/cli.js <glob> [<glob>...] [options]`
+
 */
-var args = require('minimist')(process.argv.slice(2)),
-    config = assign({
-        base: '.',
-        title: 'Home',
-        dest: '.',
-        /* optional js script */
-        js: null,
-        /* optional css script */
-        css: null,
-        /* optional Mustache template for the page */
-        pageTmpl: null
-    /* CLI args for config */
-    }, args),
 
-    /* files under base to process */
-    files = args._;
+var gilk = require('../lib/index'),
+    vfs = require('vinyl-fs');
 
-console.log('gilk: started ...');
+var config = require('minimist')(process.argv.slice(2)),
+    files = config._;
+
+console.error('gilk: started ...');
 /*
 ##API
+see [index.js](/lib/index)
 */
-vinylFs.src(files, {base: config.base})
+vfs.src(files, { base: config.base || '.' })
+/*
+gilk CLI Options are passed as-is to `gilk`
+*/
     .pipe(gilk(config))
     .on('end', function () {
-        console.log('gilk: completed');
+        console.error('gilk: completed');
     })
     .on('error', function (err) {
         console.error('gilk: error', err);
     })
-    .pipe(vinylFs.dest(config.dest));
+    .pipe(vfs.dest(config.dest || '.'));

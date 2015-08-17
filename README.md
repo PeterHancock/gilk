@@ -1,3 +1,3 @@
-# GILK
+# gilk
 
-Literate-style `js` to `html`
+Convert literate-style `js` to `html`

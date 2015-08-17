@@ -1,8 +1,8 @@
 {
   "name": "gilk",
   "version": "0.0.0",
-  "description": "Bootstrap + Docco",
-  "main": "index.js",
+  "description": "Convert literate-style js to html",
+  "main": "lib/index.js",
   "bin": {
     "gilk": "bin/cmd.js"
   },
@@ -17,11 +17,10 @@
     "mustache": "~2.0.0",
     "object-assign": "^3.0.0",
     "through": "~2.3.7",
-    "underscore": "1.8.3",
     "vinyl": "~0.4.6",
     "vinyl-fs": "~1.0.0"
   },
   "scripts": {
-    "docs": "rm -rf build && mkdir -p build/public &&  ./bin/cmd.js bin/cmd.js --base bin --index README.md --dest build/public"
+    "docs": "rm -rf build && mkdir -p build/public && ./bin/cmd.js bin/cmd.js lib/*.js --index README.md --dest build/public --title gilk --exclude-source"
   }
 }
