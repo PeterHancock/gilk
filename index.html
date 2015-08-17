@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>gilk</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="/gilk/bootstrap/css/bootstrap.min.css">
+  <!-- Code highlighting -->
+  <link rel="stylesheet" href="/gilk/prism/prism-hopscotch.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a href="/gilk/">
+                    <span class="navbar-brand">gilk</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container">
+      <div id="header">
+          <div class="toc panel panel-default">
+              <div class="panel-heading">Table of Contents</div>
+              <div class="panel-body">
+                  <ol>
+                  <li>
+                      <a class="source" href="/gilk/bin&#x2F;cmd.html">bin&#x2F;cmd</a>
+                  </li>
+                  <li>
+                      <a class="source" href="/gilk/lib&#x2F;index.html">lib&#x2F;index</a>
+                  </li>
+                  </ol>
+              </div>
+          </div>
+      </div>
+      <div class="sections">
+          <h1 id="gilk">gilk</h1>
+<p>Convert literate-style <code>js</code> to <code>html</code></p>
+<h2 id="install">Install</h2>
+<pre><code>npm install -g gilk
+</code></pre><h2 id="usage">Usage</h2>
+<pre><code>gilk  &lt;glob&gt; [&lt;glob&gt;...] [options]
+</code></pre><p>Example: Generate gilk docs</p>
+<pre><code>gilk bin/cmd.js lib/*.js --index README.md --dest docs/public --title gilk --exclude-source
+</code></pre><p>For CLI usage and API see the  <a href="https://PeterHancock.github.io/gilk">docs</a></p>
+
+      </div>
+      <hr>
+  </div>
+  <script type="text/javascript" src="/gilk/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="/gilk/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/gilk/prism/prism.js"></script>
+</body>
+</html>
