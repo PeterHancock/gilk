@@ -1,10 +1,10 @@
 {
   "name": "gilk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Convert literate-style js to html",
-  "repository" : {
-      "type" : "git",
-      "url" : "https://github.com/PeterHancock/gilk"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeterHancock/gilk"
   },
   "main": "lib/index.js",
   "bin": {
