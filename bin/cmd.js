@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /*
-#gilk CLI
+# gilk CLI
 
 `./bin/cli.js <glob> [<glob>...] [options]`
 
@@ -17,7 +17,7 @@ config.markdown = (config.markdown === 'true');
 
 console.error('gilk: started ...');
 /*
-##API
+## API
 see [index.js](/gilk/lib/index)
 */
 vfs.src(files, { base: config.base || '.' })
