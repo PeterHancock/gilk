@@ -24,20 +24,25 @@
       <div id="header">
       </div>
       <div class="sections">
-          <h1>gilk CLI</h1>
+          <h1 id="gilk-cli">gilk CLI</h1>
 <p><code>./bin/cli.js &lt;glob&gt; [&lt;glob&gt;...] [options]</code></p>
+
           <div><pre class="language-javascript" data-start="10"><code class="language-javascript">var gilk = require('../lib/index'),
     vfs = require('vinyl-fs');
 
 var config = require('minimist')(process.argv.slice(2)),
     files = config._;
 
+config.markdown = (config.markdown === 'true');
+
 console.error('gilk: started ...');</code></pre></div>
-          <h2>API</h2>
+          <h2 id="api">API</h2>
 <p>see <a href="/gilk/lib/index">index.js</a></p>
-          <div><pre class="language-javascript" data-start="21"><code class="language-javascript">vfs.src(files, { base: config.base || '.' })</code></pre></div>
+
+          <div><pre class="language-javascript" data-start="23"><code class="language-javascript">vfs.src(files, { base: config.base || '.' })</code></pre></div>
           <p>gilk CLI Options are passed as-is to <code>gilk</code></p>
-          <div><pre class="language-javascript" data-start="25"><code class="language-javascript">.pipe(gilk(config))
+
+          <div><pre class="language-javascript" data-start="27"><code class="language-javascript">.pipe(gilk(config))
 .on('end', function () {
     console.error('gilk: completed');
 })
