@@ -13,6 +13,8 @@ var gilk = require('../lib/index'),
 var config = require('minimist')(process.argv.slice(2)),
     files = config._;
 
+config.markdown = (config.markdown === 'true');
+
 console.error('gilk: started ...');
 /*
 ##API

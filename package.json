@@ -25,6 +25,7 @@
     "vinyl-fs": "~1.0.0"
   },
   "scripts": {
-    "docs": "rm -rf build  && ./bin/cmd.js bin/cmd.js lib/*.js --index README.md --dest build/gilk --baseurl /gilk --title gilk --exclude-source"
+    "docs:html": "rm -rf build  && ./bin/cmd.js bin/cmd.js lib/*.js --index README.md --dest build/gilk --baseurl /gilk --title gilk --exclude-source",
+    "docs:markdown": "rm -rf build  && ./bin/cmd.js bin/cmd.js lib/*.js --index README.md --markdown true --baseurl /gilk --dest build/gilk  --title gilk --exclude-source"
   }
 }
