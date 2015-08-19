@@ -2,7 +2,7 @@
 
 
 # index.js
-deps
+'require'd modules
 ``` javascript
 var Promise = require('es6-promise').Promise,
     assign = require('object-assign'),
@@ -31,7 +31,9 @@ markdown.setOptions({
     smartLists: true,
     smartypants: false
 });
-
+```
+gilk module API
+``` javascript
 module.exports = function gilk(config) {
 ```
 Default configuration
@@ -62,7 +64,7 @@ Override default properties and add custom properties
 config);
 
     var defaultTmpl = config.markdown ? 'md.tmpl' : 'html.tmpl';
-
+    
     var ext =  config.markdown ? '.md' : '.html';
 ```
 Retrieve template content
