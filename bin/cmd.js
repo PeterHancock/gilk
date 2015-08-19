@@ -18,7 +18,7 @@ config.markdown = (config.markdown === 'true');
 console.error('gilk: started ...');
 /*
 ## API
-see [index.js](/gilk/lib/index)
+see [index.js](../lib/index)
 */
 vfs.src(files, { base: config.base || '.' })
 /*

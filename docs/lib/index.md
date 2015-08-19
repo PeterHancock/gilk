@@ -112,10 +112,11 @@ if (config.index) {
 ```
 Render the index doc
 ``` javascript
+var index = config.markdown ? 'README.md' : 'index.html';
 tasks.push(
     renderIndex(tmpl, sources, config).then(function(contents) {
         stream.queue(new File({
-            path: 'index' + ext,
+            path: index,
             contents: new Buffer(contents)
         }));
     })
