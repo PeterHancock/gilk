@@ -1,8 +1,8 @@
 # [gilk](/docs/)
 
 ## Table of Content
-* [bin/cmd](/docs/bin/cmd.md)
-* [lib/index](/docs/lib/index.md)
+* [bin/cmd.js](/docs/bin/cmd.md)
+* [lib/index.js](/docs/lib/index.md)
 
 # gilk
 

@@ -39,8 +39,8 @@ module.exports = function gilk(config) {
 Default configuration
 ``` javascript
 config = assign({
-        base: '.',
         dest: '.',
+        base: '.',
 ```
 Optional custom Mustache page template
 ``` javascript
@@ -56,7 +56,7 @@ js: null,
 Optional css script
 ``` javascript
 css: null,
-'exclude-source': null
+'include-source': false
         },
 ```
 Override default properties and add custom properties
@@ -64,7 +64,7 @@ Override default properties and add custom properties
 config);
 
     var defaultTmpl = config.markdown ? 'md.tmpl' : 'html.tmpl';
-    
+
     var ext =  config.markdown ? '.md' : '.html';
 ```
 Retrieve template content
@@ -90,12 +90,13 @@ var stream = through(function(file) {
     var sourcePath = path.relative(file.base, docFile.path);
     sources.push({
         href: sourcePath,
-        name: path.join(path.dirname(sourcePath), path.basename(sourcePath, ext)).split(path.sep).join('/')
+        path: file.relative,
+        base: file.base
     });
 ```
 stream source js file
 ``` javascript
-if (!config['exclude-source']) {
+if (config['include-source']) {
     this.queue(file);
 }
 ```
@@ -140,13 +141,13 @@ function renderDocFile(tmpl, file, extension, config) {
     var comments = dox.parseComments(file.contents.toString(), {raw: config.markdown});
     var doc = Mustache.render(tmpl,
         assign({
-srcfile: path.relative(config.base, file.path),
+srcfile: file.relative,
 comments: comments
 ```
 All `config` properties are available in the doc template
 ``` javascript
 }, config));
-    return assign(file.clone(), {
+    return assign(file.clone({ contents: false }), {
 contents: new Buffer(doc),
 path: file.path.replace(/\.js$/, extension)
     });
