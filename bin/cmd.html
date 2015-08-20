@@ -16,6 +16,7 @@
                     <a href="/gilk/">
                     <span class="navbar-brand">gilk</span>
                     </a>
+                    <span>bin&#x2F;cmd.js</span>
                 </div>
             </div>
         </nav>
@@ -30,15 +31,15 @@
           <div><pre class="language-javascript" data-start="13"><code class="language-javascript">var gilk = require('../lib/index'),
     vfs = require('vinyl-fs');
 
-var config = require('minimist')(process.argv.slice(2)),
+var config = require('minimist')(process.argv.slice(2),
+        { boolean: ['markdown', 'include-source'] }),
     files = config._;
-
-config.markdown = (config.markdown === 'true');
 
 console.error('gilk: started ...');</code></pre></div>
           <h2>API usage</h2>
 
-          <div><pre class="language-javascript" data-start="25"><code class="language-javascript">vfs.src(files, { base: config.base || '.' })</code></pre></div>
+          <div><pre class="language-javascript" data-start="24"><code class="language-javascript">var base = config.base || '.';
+vfs.src(files, { cwd: base, base: base })</code></pre></div>
           <p>gilk CLI options are passed as-is to gilk API</p>
           <div><pre class="language-javascript" data-start="29"><code class="language-javascript">.pipe(gilk(config))
 .on('end', function () {

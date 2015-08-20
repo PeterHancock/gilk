@@ -16,6 +16,7 @@
                     <a href="/gilk/">
                     <span class="navbar-brand">gilk</span>
                     </a>
+                    <span>lib&#x2F;index.js</span>
                 </div>
             </div>
         </nav>
@@ -56,8 +57,8 @@ var root = path.join(__dirname, '..'),
           <div><pre class="language-javascript" data-start="40"><code class="language-javascript">module.exports = function gilk(config) {</code></pre></div>
           <p>Default configuration</p>
           <div><pre class="language-javascript" data-start="44"><code class="language-javascript">config = assign({
-        base: '.',
-        dest: '.',</code></pre></div>
+        dest: '.',
+        base: '.',</code></pre></div>
           <p>Optional custom Mustache page template</p>
           <div><pre class="language-javascript" data-start="48"><code class="language-javascript">template: null,
 markdown: false,
@@ -67,13 +68,13 @@ title: 'Home',</code></pre></div>
           <div><pre class="language-javascript" data-start="53"><code class="language-javascript">js: null,</code></pre></div>
           <p>Optional css script</p>
           <div><pre class="language-javascript" data-start="55"><code class="language-javascript">css: null,
-'exclude-source': null
+'include-source': false
         },</code></pre></div>
           <p>Override default properties and add custom properties</p>
           <div><pre class="language-javascript" data-start="59"><code class="language-javascript">config);
 
     var defaultTmpl = config.markdown ? 'md.tmpl' : 'html.tmpl';
-    
+
     var ext =  config.markdown ? '.md' : '.html';</code></pre></div>
           <p>Retrieve template content</p>
           <div><pre class="language-javascript" data-start="66"><code class="language-javascript">var tmpl = fs.readFileSync(config.template || path.join(templates, defaultTmpl)).toString(),
@@ -93,23 +94,24 @@ if (!config.markdown && !config.template) {</code></pre></div>
     var sourcePath = path.relative(file.base, docFile.path);
     sources.push({
         href: sourcePath,
-        name: path.join(path.dirname(sourcePath), path.basename(sourcePath, ext)).split(path.sep).join('/')
+        path: file.relative,
+        base: file.base
     });</code></pre></div>
           <p>stream source js file</p>
-          <div><pre class="language-javascript" data-start="87"><code class="language-javascript">if (!config['exclude-source']) {
+          <div><pre class="language-javascript" data-start="88"><code class="language-javascript">if (config['include-source']) {
     this.queue(file);
 }</code></pre></div>
           <p>stream doc file</p>
-          <div><pre class="language-javascript" data-start="91"><code class="language-javascript">this.queue(docFile);
+          <div><pre class="language-javascript" data-start="92"><code class="language-javascript">this.queue(docFile);
     }, function() {</code></pre></div>
           <p>stream a JSON representation of the TOC</p>
-          <div><pre class="language-javascript" data-start="94"><code class="language-javascript">stream.queue(new File({
+          <div><pre class="language-javascript" data-start="95"><code class="language-javascript">stream.queue(new File({
     path: 'toc.json',
     contents: new Buffer(JSON.stringify(sources))
 }));
 if (config.index) {</code></pre></div>
           <p>Render the index doc</p>
-          <div><pre class="language-javascript" data-start="100"><code class="language-javascript">var index = config.markdown ? 'README.md' : 'index.html';
+          <div><pre class="language-javascript" data-start="101"><code class="language-javascript">var index = config.markdown ? 'README.md' : 'index.html';
 tasks.push(
     renderIndex(tmpl, sources, config).then(function(contents) {
         stream.queue(new File({
@@ -135,11 +137,11 @@ function renderDocFile(tmpl, file, extension, config) {
     var comments = dox.parseComments(file.contents.toString(), {raw: config.markdown});
     var doc = Mustache.render(tmpl,
         assign({
-srcfile: path.relative(config.base, file.path),
+srcfile: file.relative,
 comments: comments</code></pre></div>
           <p>All <code>config</code> properties are available in the doc template</p>
-          <div><pre class="language-javascript" data-start="129"><code class="language-javascript">}, config));
-    return assign(file.clone(), {
+          <div><pre class="language-javascript" data-start="130"><code class="language-javascript">}, config));
+    return assign(file.clone({ contents: false }), {
 contents: new Buffer(doc),
 path: file.path.replace(/\.js$/, extension)
     });
@@ -166,7 +168,7 @@ fs.readFile(config.index, function (err, buf) {
             }
         },</code></pre></div>
           <p>All <code>config</code> properties are available in the doc template</p>
-          <div><pre class="language-javascript" data-start="157"><code class="language-javascript">config)
+          <div><pre class="language-javascript" data-start="158"><code class="language-javascript">config)
             ));
         });
     });
