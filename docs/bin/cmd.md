@@ -4,7 +4,9 @@
 # gilk CLI
 
 `./bin/cli.js <glob> [<glob>...] [options]`
+
 `require` gilk
+
 ``` javascript
 var gilk = require('../lib/index'),
     vfs = require('vinyl-fs');
@@ -15,12 +17,16 @@ var config = require('minimist')(process.argv.slice(2),
 
 console.error('gilk: started ...');
 ```
+
 ## API usage
+
 ``` javascript
 var base = config.base || '.';
 vfs.src(files, { cwd: base, base: base })
 ```
+
 gilk CLI options are passed as-is to gilk API
+
 ``` javascript
 .pipe(gilk(config))
 .on('end', function () {
@@ -31,3 +37,4 @@ gilk CLI options are passed as-is to gilk API
 })
 .pipe(vfs.dest(config.dest || '.'));
 ```
+

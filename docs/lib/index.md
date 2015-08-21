@@ -2,7 +2,9 @@
 
 
 # index.js
+
 'require'd modules
+
 ``` javascript
 var Promise = require('es6-promise').Promise,
     assign = require('object-assign'),
@@ -19,7 +21,9 @@ var root = path.join(__dirname, '..'),
     templates = path.join(root, 'templates'),
     publicSrc = path.join(root, 'public');
 ```
+
 Configuration for the Markdown renderer
+
 ``` javascript
 markdown.setOptions({
     renderer: new markdown.Renderer(),
@@ -32,34 +36,46 @@ markdown.setOptions({
     smartypants: false
 });
 ```
+
 gilk module API
+
 ``` javascript
 module.exports = function gilk(config) {
 ```
+
 Default configuration
+
 ``` javascript
 config = assign({
         dest: '.',
         base: '.',
 ```
+
 Optional custom Mustache page template
+
 ``` javascript
 template: null,
 markdown: false,
 baseurl: '',
 title: 'Home',
 ```
+
 Optional js script
+
 ``` javascript
 js: null,
 ```
+
 Optional css script
+
 ``` javascript
 css: null,
 'include-source': false
         },
 ```
+
 Override default properties and add custom properties
+
 ``` javascript
 config);
 
@@ -67,14 +83,18 @@ config);
 
     var ext =  config.markdown ? '.md' : '.html';
 ```
+
 Retrieve template content
+
 ``` javascript
 var tmpl = fs.readFileSync(config.template || path.join(templates, defaultTmpl)).toString(),
     sources = [],
     tasks = [];
 if (!config.markdown && !config.template) {
 ```
+
 stream static resources associated with the default doc template
+
 ``` javascript
 tasks.push(new Promise(function(resolve) {
     vinylFs.src(path.join(publicSrc, '**/*')).pipe(through(function(resource) {
@@ -83,7 +103,9 @@ tasks.push(new Promise(function(resolve) {
 }));
     }
 ```
+
 The documentation transform stream
+
 ``` javascript
 var stream = through(function(file) {
     var docFile = renderDocFile(tmpl, file, ext, config);
@@ -94,18 +116,24 @@ var stream = through(function(file) {
         base: file.base
     });
 ```
+
 stream source js file
+
 ``` javascript
 if (config['include-source']) {
     this.queue(file);
 }
 ```
+
 stream doc file
+
 ``` javascript
 this.queue(docFile);
     }, function() {
 ```
+
 stream a JSON representation of the TOC
+
 ``` javascript
 stream.queue(new File({
     path: 'toc.json',
@@ -113,7 +141,9 @@ stream.queue(new File({
 }));
 if (config.index) {
 ```
+
 Render the index doc
+
 ``` javascript
 var index = config.markdown ? 'README.md' : 'index.html';
 tasks.push(
@@ -144,7 +174,9 @@ function renderDocFile(tmpl, file, extension, config) {
 srcfile: file.relative,
 comments: comments
 ```
+
 All `config` properties are available in the doc template
+
 ``` javascript
 }, config));
     return assign(file.clone({ contents: false }), {
@@ -174,7 +206,9 @@ fs.readFile(config.index, function (err, buf) {
             }
         },
 ```
+
 All `config` properties are available in the doc template
+
 ``` javascript
 config)
             ));
@@ -182,3 +216,4 @@ config)
     });
 }
 ```
+
